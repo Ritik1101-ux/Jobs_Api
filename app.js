@@ -11,6 +11,9 @@ import cors from 'cors';
 import xss from 'xss-clean';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
+import swaggerUI from 'swagger-ui-express';
+import YAML from 'yamljs';
+const swaggerDocument = YAML.load('./swagger.yaml');
 
 const app = express();
 dotenv.config();
@@ -27,9 +30,13 @@ app.use(helmet());// Helmet secures your express app by setting response HTTP he
 app.use(cors())// Cors enables your express application access control to allow restricted resources from being accessed from external domains
 app.use(xss());//Cross-site scripting (XSS) is a type of security exploit that allows attackers to inject malicious scripts on websites using client code
 // routes
+
+
 app.get('/', (req, res) => {
-  res.send('jobs api');
+  res.send('<h1>Jobs API</h1><a href="/api-docs">Documentation</a>');
 });
+
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 
 app.use('/api/v1/auth',AuthRouer);
 app.use('/api/v1/jobs',AuthenticatorMiddleware,JobRouter);
